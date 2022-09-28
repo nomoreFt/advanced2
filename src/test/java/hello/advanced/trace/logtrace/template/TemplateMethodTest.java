@@ -44,7 +44,7 @@ public class TemplateMethodTest {
         AbstractTemplate template2 = new SubClassLogic2();
         template2.execute();
     }
-
+//s
     @Test
     void templateMethodV2() {
         AbstractTemplate template = new AbstractTemplate() {
