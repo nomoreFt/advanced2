@@ -175,4 +175,47 @@ AbstractMethod의 형변환으로 SubClassLogic1, SubClassLogic2의 execute를 �
 
 ---
 
+
+
+## 전략 패턴 (Strategy Pattern)
+
+템플릿 메서드 패턴은 공통 부모를 '상속'해야 한다는 단점이 있다.<br>
+상속을 하면 많은 문제점이 생긴다.<br>
+
+* 부모 클래스가 변경되면 하위 자식들도 영향을 받는다. (ex메서드 하나 추가 등)
+* 자식에서 사용되지 않는 많은 부분을 가지고 있어야 한다.
+* 강한 의존을 가진다. (부모 없이는 자식이 존재할 수 없다.)
+
+이것을 개선하여 템플릿 메서드 패턴 -> 전략 패턴으로 진화했다.
+
+Context (템플릿) -> Interface (기능) 으로  상속이 아닌 <<Interface>>로 수정한다.<br>
+Interface로 공통부분을 제외한, 수정되는 비즈니스 기능은 구현하면 된다. (필요에 따라)
+
+`공통로직 Interface`를 생성해서 내가 사용하고 싶은 공통 로직에
+호출해서 교체하면 된다. (스프링에서 사용하는 의존성 주입방식이 바로 이 전략패턴이다!)
+
+### 구현 예제
+
+전략 구현 소스는 Strategy라는 Interface를 구현한 strategyLogic 1, 2로 두가지 다른 동작이 있다.<br>
+불변의 Context 템플릿에 Strategy를 주입받으면 의존성 주입으로 동작에 따라 구현된 로직을 다르게 주입하여 호출하면 된다.<br>
+
+사용자는 원하는 기능을 조립한 Context를 실행시키기만 하면 된다.
+다른 동작을 원하면 다른 동작을 조립하면 된다. (Interface의 구현체기 때문에)
+
+```java
+
+ @Test
+    void strategyV1() {
+        StrategyLogic1 strategyLogic1 = new StrategyLogic1();
+        ContextV1 context1 = new ContextV1(strategyLogic1);
+        context1.execute();
+
+        StrategyLogic2 strategyLogic2 = new StrategyLogic2();
+        ContextV1 context2 = new ContextV1(strategyLogic2);
+        context2.execute();
+    }
+}
+
+```
+
 ## 콜백 패
