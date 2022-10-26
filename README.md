@@ -199,8 +199,62 @@ Interface로 공통부분을 제외한, 수정되는 비즈니스 기능은 구�
 전략 구현 소스는 Strategy라는 Interface를 구현한 strategyLogic 1, 2로 두가지 다른 동작이 있다.<br>
 불변의 Context 템플릿에 Strategy를 주입받으면 의존성 주입으로 동작에 따라 구현된 로직을 다르게 주입하여 호출하면 된다.<br>
 
-사용자는 원하는 기능을 조립한 Context를 실행시키기만 하면 된다.
-다른 동작을 원하면 다른 동작을 조립하면 된다. (Interface의 구현체기 때문에)
+#### 사전 준비
+
+<br>
+<br>
+공통기능 사이에 들어가는 전략 기능을 구현하기 위해 Interface로 생성한다.<br>
+람다를 사용하기 위해 미리 하나의 메서드만 생성해둔다.<br>
+(람다를 사용하기 위해서는 Interface에 method 하나를 선언해두면 된다.)
+<br>
+<br>
+
+```java
+public interface Strategy {
+    void call();
+}
+```
+
+#### 방법 1. 조립을 완전히 하여 완제품으로 사용하는 경우
+
+<br>
+사용자는 원하는 기능을 조립한 Context를 실행시키기만 하면 된다.<br>
+다른 동작을 원하면 다른 동작을 조립하면 된다. (Interface의 구현체기 때문에)<br><br>
+
+
+* 공통 로직 선언<br>
+
+<br>
+<br>
+공통 로직에서 생성시에 Strategy를 주입받고<br>
+주입받은 Strategy를 사용하는 로직을 구현한다.<br>
+
+```java
+@Slf4j
+public class ContextV1 {
+
+    private Strategy strategy;
+
+    public ContextV1(Strategy strategyLogic1) {
+        this.strategy = strategyLogic1;
+    }
+
+    public void execute() {
+        long startTime = System.currentTimeMillis();
+        //비즈니스 로직 실행
+        strategy.call();
+        //비즈니스 로직 종료
+        long endTime = System.currentTimeMillis();
+        long resultTime = startTime - endTime;
+        log.info("resultTime={}", resultTime);
+    }
+}
+```
+
+<br>
+<br>
+
+* 실사용
 
 ```java
 
@@ -215,6 +269,50 @@ Interface로 공통부분을 제외한, 수정되는 비즈니스 기능은 구�
         context2.execute();
     }
 }
+
+```
+
+<br>
+<br>
+이 방법은 조립시에 의존성 주입을 해야한다는 단점이 있다.<br>
+그래서 다른 방식으로 조립을 다 해놓고 내부 전략만 람다로 전달받는 방법이 있다.
+
+#### 방법 2. 가조립을 해두고 때에 따라 다른 기능을 람다로 전달
+
+<br>
+
+앞서 람다를 염두에 두고 `Strategy` Interface에 method를 하나만 선언.<br>
+이전과 다른 점은 Context 객체에서 받는게 아니라 execute(실행로직)에서 받는다.<br>
+
+
+```java
+@Slf4j
+public class ContextV2 {
+
+
+    public void execute(Strategy strategy) {
+        long startTime = System.currentTimeMillis();
+        //비즈니스 로직 실행
+        strategy.call();
+        //비즈니스 로직 종료
+        long endTime = System.currentTimeMillis();
+        long resultTime = startTime - endTime;
+        log.info("resultTime={}", resultTime);
+    }
+}
+
+```
+
+<br>
+가조립 후, 호출 때 마다 공통 기능 사이의 원하는 기능을 주입
+```java
+    @Test
+    void strategyV2() {
+        ContextV2 context = new ContextV2();
+
+        context.execute(() -> log.info("1"));
+        context.execute(() -> log.info("2"));
+    }
 
 ```
 
