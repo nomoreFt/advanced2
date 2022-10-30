@@ -3,7 +3,7 @@
 ## 동시성 문제 발생 예시
 
 주로 싱글톤에서 static Field / 인스턴스 Field 등 작업단위에서 공용으로
-변수를 접근하여 수정할 경우 동시성 문제가 발생한다.
+변수를 접근하여 수정할 경우 동시성 문제가xx 발생한다.
 
 ```java
 private int id;//인스턴스 변수
@@ -316,4 +316,19 @@ public class ContextV2 {
 
 ```
 
-## 콜백 패
+## 템플릿 콜백 패턴
+
+<br>
+callback은 막 그대로 파라미터로 기능을 넘겨주는 것을 말한다.<br>
+그래서 call 후 after function이라고도 한다.<br>
+
+보통 자바 8 이상에서는 람다를 이용한다.<br>
+스프링에서 `xxxTemplate`으로 된 객체들이 있다면, 템플릿 콜백 패턴으로 만들어져 있다고 생각하면 된다.<br>
+ex) `JdbcTemplate`,`RestTemplate`, `TransactionTemplate`,`RedisTemplate`<br><br>
+
+1.앞서 사용한 공통소스 Template에 callback 메서드를 전달하면서 실행한다.<br>
+2.Template의 execute()를 실행한다.<br>
+3.execute()는 callback을 실행한다.<br>
+4.callback은 Template의 공통 로직을 사용한다.<br>
+
+
